@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>探鳥ノート</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap">
+<style>
+:root{--bg:#eef7f0;--card:#fffefa;--ink:#2c3e3a;--sub:#6f8a84;--pri:#3fa796;--pri-ink:#fff;--acc:#ff8f6b;--line:#cfe5dc;--chip:#dff1e8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13211e;--card:#1b2f2b;--ink:#e6f3ee;--sub:#93b0a8;--pri:#6fd3bf;--pri-ink:#0b2420;--acc:#ff9f7d;--line:#2a443e;--chip:#223a35;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13211e;--card:#1b2f2b;--ink:#e6f3ee;--sub:#93b0a8;--pri:#6fd3bf;--pri-ink:#0b2420;--acc:#ff9f7d;--line:#2a443e;--chip:#223a35;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Maru Gothic","Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.6;max-width:560px;margin-inline:auto;min-height:100vh}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;gap:8px;padding:12px 16px 8px}
+header h1{font-size:1.15rem;margin:0;font-weight:900;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.back{border:0;background:var(--chip);color:var(--pri);font:inherit;font-weight:700;border-radius:99px;padding:6px 14px;cursor:pointer}
+main{padding:4px 16px 110px}
+button:focus-visible,input:focus-visible,.row:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.rg{display:flex;width:100%;justify-content:space-between;align-items:baseline;font:inherit;font-size:1rem;font-weight:900;color:var(--ink);background:none;cursor:pointer;text-align:left;margin:20px 0 8px;padding:6px 0;border:0;border-bottom:2px solid var(--line)}
+.rg i{font-style:normal;color:var(--sub);font-size:.7rem;margin-right:4px;transition:transform .15s}
+.rg span{font-size:.85rem;color:var(--pri)}
+.life{padding:8px 0 18px}
+.life .n{font-size:4.6rem;font-weight:900;line-height:1;color:var(--pri)}
+.life .n small{font-size:1.2rem;color:var(--ink);margin-left:6px}
+.life p{margin:6px 0 0;color:var(--sub);font-size:.9rem}
+.search,.f input,.f textarea{width:100%;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:inherit;border-radius:12px;padding:10px 14px;margin-bottom:12px}
+.row{display:flex;align-items:center;gap:12px;background:var(--card);border-left:5px solid var(--line);border-radius:6px 14px 14px 6px;padding:12px 14px;margin-bottom:8px;cursor:pointer;width:100%;text-align:left;border-top:0;border-right:0;border-bottom:0;font:inherit;color:inherit}
+.row.on{border-left-color:var(--pri)}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;font-weight:700}
+.row .t span{display:block;font-size:.8rem;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cnt{font-weight:900;font-size:1.3rem;color:var(--pri)}
+.cnt small{font-size:.7rem;color:var(--sub);margin-left:2px;font-weight:400}
+.chk{width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;font-weight:900;flex:none}
+.add{display:flex;gap:8px;margin-bottom:14px}
+.add input{flex:1;margin:0;width:auto}
+.btn{border:0;background:var(--pri);color:var(--pri-ink);font:inherit;font-weight:700;border-radius:12px;padding:10px 18px;cursor:pointer}
+.btn.ghost{background:var(--chip);color:var(--pri)}
+.btn.del{background:transparent;color:#c0392b}
+.empty{color:var(--sub);text-align:center;padding:36px 12px;font-size:.95rem}
+.fab{position:fixed;right:max(18px,calc(50% - 262px));bottom:calc(20px + env(safe-area-inset-bottom,0px));width:60px;height:60px;border-radius:50%;border:0;background:var(--acc);color:#fff;font-size:2rem;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer;z-index:6}
+#sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+#sheet.show{display:flex}
+#asheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+#asheet.show{display:flex}
+.panel{background:var(--bg);width:100%;max-width:560px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto}
+.panel h2{margin:0 0 12px;font-size:1.05rem}
+.f label{display:block;font-size:.8rem;color:var(--sub);margin-bottom:2px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+.f textarea{resize:vertical}
+.ph{display:flex;gap:8px;margin-bottom:8px}
+.ph div{position:relative;width:76px;height:76px;border-radius:10px;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph div button{position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;cursor:pointer}
+.addph{width:76px;height:76px;border-radius:10px;border:2px dashed var(--line);background:transparent;color:var(--pri);font-size:1.6rem;cursor:pointer}
+.err{color:#c0392b;font-size:.85rem;margin:4px 0;min-height:1em}
+.th{width:44px;height:44px;border-radius:8px;object-fit:cover;flex:none}
+body{background-image:radial-gradient(var(--line) 1.3px,transparent 1.4px);background-size:22px 22px}
+header h1{font-size:1.3rem}
+.life{background:var(--card);border-radius:26px;padding:18px 22px;margin:6px 0 14px;position:relative;box-shadow:0 4px 0 var(--line)}
+.life::after{content:"🐦";position:absolute;right:18px;top:14px;font-size:2.4rem}
+.row{border:2px solid var(--line);border-radius:20px;box-shadow:0 3px 0 var(--line)}
+.row.on{border-color:var(--pri);box-shadow:0 3px 0 var(--pri)}
+.rg{background:var(--chip);border:0;border-radius:999px;padding:8px 18px;margin:20px 0 10px}
+.search{border-radius:999px;padding:10px 18px}
+.f input,.f textarea{border-radius:14px}
+.btn{border-radius:999px;padding:10px 20px}
+.chk{background:var(--chip);font-size:1.1rem}
+.fab{border:4px solid var(--card)}
+.panel{border-radius:30px 30px 0 0}
+.addph,.ph div,.th{border-radius:16px}
+input,select,textarea{font-size:16px}
+.add input{min-width:0;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit;border-radius:999px;padding:10px 18px}
+.two>div{min-width:0}
+.f input[type=date],.f input[type=time]{min-width:0;display:block;-webkit-appearance:none;appearance:none;text-align:left;min-height:3.05rem}
+.f select{width:100%;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:inherit;border-radius:14px;padding:10px 14px;margin-bottom:12px;min-height:3.05rem}
+@media (prefers-reduced-motion:no-preference){.panel{animation:up .18s ease-out}@keyframes up{from{transform:translateY(30px);opacity:.5}}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="asheet" onclick="if(event.target===this)closeA()">
+ <div class="panel f">
+  <h2>観察地を編集</h2>
+  <label for="aname">観察地の名前</label>
+  <input id="aname">
+  <p class="err" id="aerr"></p>
+  <div class="acts">
+   <button class="btn del" id="adel" onclick="delArea()">削除</button>
+   <button class="btn ghost" onclick="closeA()">キャンセル</button>
+   <button class="btn" onclick="saveArea()">保存</button>
+  </div>
+ </div>
+</div>
+<div id="sheet" onclick="if(event.target===this)closeSheet()">
+ <div class="panel f">
+  <h2 id="sh-t">鳥を記録しよう</h2>
+  <label for="bird">鳥の名前</label>
+  <input id="bird" list="blist" placeholder="例：カワセミ" autocomplete="off">
+  <datalist id="blist"></datalist>
+  <div class="two">
+   <div><label for="date">観察日</label><input id="date" type="date"></div>
+   <div><label for="place">地名</label><input id="place" placeholder="例：○○の池の東岸"></div>
+   <div><label for="time">時間</label><input id="time" type="time"></div>
+   <div><label for="weather">天気</label><select id="weather"><option value="">選択</option><option>☀️ 晴れ</option><option>⛅ くもり</option><option>🌧️ 雨</option><option>❄️ 雪</option><option>🌫️ 霧</option></select></div>
+   <div style="grid-column:1/-1"><label for="tags">タグ（カンマ区切り）</label><input id="tags" placeholder="水辺, さえずり"></div>
+  </div>
+  <label for="memo">メモ</label>
+  <textarea id="memo" rows="3" placeholder="どんな様子だった？鳴き声は？"></textarea>
+  <label>写真（3枚まで・自動で小さくするよ）</label>
+  <div class="ph" id="ph"></div>
+  <input id="file" type="file" accept="image/*" multiple hidden onchange="addPhotos(this)">
+  <p class="err" id="err"></p>
+  <div class="acts">
+   <button class="btn del" id="sh-del" onclick="delRec()">削除</button>
+   <button class="btn ghost" onclick="closeSheet()">キャンセル</button>
+   <button class="btn" onclick="saveRec()">記録する</button>
+  </div>
+ </div>
+</div>
+<script>
+const PREFS="北海道,青森県,岩手県,宮城県,秋田県,山形県,福島県,茨城県,栃木県,群馬県,埼玉県,千葉県,東京都,神奈川県,新潟県,富山県,石川県,福井県,山梨県,長野県,岐阜県,静岡県,愛知県,三重県,滋賀県,京都府,大阪府,兵庫県,奈良県,和歌山県,鳥取県,島根県,岡山県,広島県,山口県,徳島県,香川県,愛媛県,高知県,福岡県,佐賀県,長崎県,熊本県,大分県,宮崎県,鹿児島県,沖縄県".split(",");
+const BIRDS="スズメ,ハシブトガラス,ハシボソガラス,ドバト,キジバト,ヒヨドリ,ムクドリ,メジロ,シジュウカラ,ヤマガラ,コガラ,エナガ,ウグイス,ホオジロ,カワラヒワ,シメ,ジョウビタキ,ツグミ,シロハラ,アカハラ,ツバメ,イワツバメ,セグロセキレイ,ハクセキレイ,キセキレイ,カワセミ,ヤマセミ,アオサギ,ダイサギ,コサギ,アマサギ,ゴイサギ,カワウ,カイツブリ,オオバン,バン,カルガモ,マガモ,コガモ,オナガガモ,ヒドリガモ,ハシビロガモ,キンクロハジロ,ホシハジロ,オシドリ,コハクチョウ,オオハクチョウ,トビ,ノスリ,オオタカ,ハヤブサ,チョウゲンボウ,ミサゴ,コゲラ,アオゲラ,アカゲラ,オオアカゲラ,モズ,オナガ,カケス,イソヒヨドリ,ルリビタキ,キビタキ,オオルリ,コマドリ,ノビタキ,アトリ,ベニマシコ,イカル,ウソ,ヒバリ,キジ,ヤマドリ,タヒバリ,コムクドリ,ユリカモメ,セグロカモメ,ウミネコ,コアジサシ,ダイゼン,シロチドリ,イカルチドリ,タシギ,イソシギ,チュウサギ,ホトトギス,カッコウ,ツツドリ,トラツグミ,アオバズク,フクロウ,ミヤマホオジロ,アオジ,カシラダカ,オオジュリン".split(",");
+const REGIONS=[["北海道",["北海道"]],["東北",["青森県","岩手県","宮城県","秋田県","山形県","福島県"]],["関東",["茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県"]],["中部",["新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県"]],["関西",["三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県"]],["中国",["鳥取県","島根県","岡山県","広島県","山口県"]],["四国",["徳島県","香川県","愛媛県","高知県"]],["九州・沖縄",["福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"]]];
+let CL=(()=>{try{return JSON.parse(localStorage.getItem("tanchou_op"))||[]}catch(e){return[]}})();
+function toggleRg(n){CL=CL.includes(n)?CL.filter(x=>x!==n):[...CL,n];try{localStorage.setItem("tanchou_op",JSON.stringify(CL))}catch(e){}prefList()}
+let D=load(),V={n:"home"},F="",editId=null;
+function load(){try{const j=JSON.parse(localStorage.getItem("tanchou"));if(j&&j.areas&&j.records)return j}catch(e){}return{areas:[],records:[]}}
+function save(){try{localStorage.setItem("tanchou",JSON.stringify(D));return true}catch(e){return false}}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+function species(areaIds){return new Set(D.records.filter(r=>areaIds.includes(r.areaId)).map(r=>r.bird)).size}
+function areasOf(p){return D.areas.filter(a=>a.pref===p)}
+function go(v){V=v;render();scrollTo(0,0)}
+function prefList(){
+ const q=F.trim();let h="";
+ REGIONS.forEach(([rn,ps])=>{
+  const L=ps.filter(p=>!q||p.includes(q)||rn.includes(q));if(!L.length)return;
+  const rc=species(D.areas.filter(a=>ps.includes(a.pref)).map(a=>a.id));
+  const open=q||CL.includes(rn);
+  h+=`<button class="rg" aria-expanded="${!!open}" onclick="toggleRg('${rn}')"><b><i style="display:inline-block;transform:rotate(${open?90:0}deg)">▶</i>${rn}</b><span>${rc?rc+"種":""}</span></button>`;
+  if(!open)return;
+  L.forEach(p=>{
+  const ar=areasOf(p),n=species(ar.map(a=>a.id));
+  h+=`<button class="row ${n?"on":""}" onclick="go({n:'pref',p:'${p}'})"><div class="t"><b>${p}</b><span>${ar.length?ar.length+"か所の観察地":"まだ記録がないよ"}</span></div>${n?`<div class="cnt">${n}<small>種</small></div>`:""}</button>`;
+  });
+ });
+ $("#plist").innerHTML=h||'<div class="empty">見つからなかったよ</div>';
+}
+function render(){
+ const app=$("#app");let h="";
+ if(V.n==="home"){
+  const all=new Set(D.records.map(r=>r.bird)).size;
+  h=`<header><h1>🐦 探鳥ノート</h1></header><main><div class="life"><div class="n">${all}<small>種</small></div><p>これまでに出会った鳥（${D.areas.length}か所・${D.records.length}件）</p></div><input class="search" aria-label="都道府県をさがす" placeholder="都道府県をさがす" value="${esc(F)}" oninput="F=this.value;prefList()"><div id="plist"></div></main>`;
+  app.innerHTML=h;prefList();$("#fab")&&$("#fab").remove();return;
+ }
+ if(V.n==="pref"){
+  const ar=areasOf(V.p);
+  h=`<header><button class="back" onclick="go({n:'home'})">戻る</button><h1>${V.p}</h1></header><main><div class="add"><input id="newarea" aria-label="観察地の名前" placeholder="観察地を追加（例：○○公園の池）"><button class="btn" onclick="addArea()">追加</button></div>`;
+  h+=ar.length?ar.map(a=>{const n=species([a.id]);return `<button class="row ${n?"on":""}" onclick="go({n:'area',id:'${a.id}'})"><div class="t"><b>${esc(a.name)}</b><span>${D.records.filter(r=>r.areaId===a.id).length}件の記録</span></div><div class="cnt">${n}<small>種</small></div></button>`}).join(""):'<div class="empty">🌱 まずは観察地を追加してみよう！</div>';
+  app.innerHTML=h+"</main>";$("#fab")&&$("#fab").remove();return;
+ }
+ const a=D.areas.find(x=>x.id===V.id);
+ if(!a){go({n:"home"});return}
+ const rs=D.records.filter(r=>r.areaId===a.id).sort((x,y)=>y.date.localeCompare(x.date));
+ h=`<header><button class="back" onclick="go({n:'pref',p:'${a.pref}'})">戻る</button><h1>${esc(a.name)}</h1><button class="back" onclick="openA()">編集</button></header><main><div class="life"><div class="n">${species([a.id])}<small>種</small></div><p>${a.pref}</p></div>`;
+ h+=rs.length?rs.map(r=>`<button class="row on" onclick="openSheet('${r.id}')"><span class="chk">🐦</span><div class="t"><b>${esc(r.bird)}</b><span>${esc(r.date)}${r.place?"・"+esc(r.place):""}${r.time?"・"+r.time:""}${r.weather?"・"+r.weather:""}${r.tags&&r.tags.length?"・"+r.tags.map(t=>"#"+esc(t)).join(" "):""}${r.memo?"・"+esc(r.memo):""}</span></div>${r.photos&&r.photos[0]?`<img class="th" alt="" src="${r.photos[0]}">`:""}</button>`).join(""):'<div class="empty">🐣 右下の＋で、出会った鳥を記録しよう！</div>';
+ app.innerHTML=h+"</main>";
+ if(!$("#fab")){const b=document.createElement("button");b.id="fab";b.className="fab";b.setAttribute("aria-label","鳥を記録");b.textContent="＋";b.onclick=()=>openSheet(null);document.body.appendChild(b)}
+}
+function addArea(){
+ const el=$("#newarea"),v=el.value.trim();if(!v)return;
+ D.areas.push({id:uid(),pref:V.p,name:v});save();render();
+}
+function openSheet(id){
+ editId=id;const r=id?D.records.find(x=>x.id===id):null;
+ $("#blist").innerHTML=BIRDS.map(b=>`<option value="${b}">`).join("");
+ $("#sh-t").textContent=r?"記録を直す":"鳥を記録しよう";
+ $("#bird").value=r?r.bird:"";$("#date").value=r?r.date:today();
+ $("#time").value=r?(r.time||""):(()=>{const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")})();$("#weather").value=r?(r.weather||""):"";$("#memo").value=r?r.memo:"";
+ $("#place").value=r?(r.place||""):"";$("#tags").value=r?(r.tags||[]).join(", "):"";PH=r&&r.photos?[...r.photos]:[];$("#err").textContent="";renderPh();
+ $("#sh-del").style.display=r?"":"none";
+ $("#sheet").classList.add("show");
+}
+let PH=[];
+function renderPh(){
+ $("#ph").innerHTML=PH.map((s,i)=>`<div><img src="${s}" alt="写真${i+1}"><button type="button" aria-label="写真を削除" onclick="PH.splice(${i},1);renderPh()">×</button></div>`).join("")+(PH.length<3?`<button type="button" class="addph" aria-label="写真を追加" onclick="document.getElementById('file').click()">＋</button>`:"");
+}
+function addPhotos(inp){
+ [...inp.files].slice(0,3-PH.length).forEach(f=>{
+  const fr=new FileReader();
+  fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);if(PH.length<3){PH.push(c.toDataURL("image/jpeg",.7));renderPh()}};im.src=fr.result};
+  fr.readAsDataURL(f);
+ });
+ inp.value="";
+}
+function openA(){const a=D.areas.find(x=>x.id===V.id);$("#aname").value=a.name;$("#aerr").textContent="";$("#adel").textContent="削除";$("#adel").dataset.s="";$("#asheet").classList.add("show")}
+function closeA(){$("#asheet").classList.remove("show")}
+function saveArea(){const v=$("#aname").value.trim();if(!v){$("#aname").focus();return}D.areas.find(x=>x.id===V.id).name=v;if(!save()){$("#aerr").textContent="保存できなかった…";return}closeA();render()}
+function delArea(){
+ const b=$("#adel"),n=D.records.filter(r=>r.areaId===V.id).length;
+ if(!b.dataset.s){b.dataset.s="1";b.textContent="ほんとに削除？";$("#aerr").textContent=n?`記録${n}件も一緒に消えちゃうよ。もう一回押すと削除されるよ。`:"もう一回押すと削除されるよ。";return}
+ const p=D.areas.find(x=>x.id===V.id).pref;D.areas=D.areas.filter(x=>x.id!==V.id);D.records=D.records.filter(r=>r.areaId!==V.id);save();closeA();go({n:"pref",p});
+}
+function closeSheet(){$("#sheet").classList.remove("show")}
+function saveRec(){
+ const bird=$("#bird").value.trim();if(!bird){$("#bird").focus();return}
+ const o={bird,date:$("#date").value||today(),time:$("#time").value,weather:$("#weather").value,memo:$("#memo").value.trim(),place:$("#place").value.trim(),tags:$("#tags").value.split(/[,、，]/).map(s=>s.trim()).filter(Boolean),photos:PH};
+ if(editId){Object.assign(D.records.find(x=>x.id===editId),o)}
+ else{editId=uid();D.records.push({id:editId,areaId:V.id,...o})}
+ if(!save()){$("#err").textContent="保存できなかった…写真を減らしてみてね。";return}closeSheet();render();
+}
+function delRec(){D.records=D.records.filter(x=>x.id!==editId);save();closeSheet();render()}
+render();
+</script>
+</body>
+</html>
